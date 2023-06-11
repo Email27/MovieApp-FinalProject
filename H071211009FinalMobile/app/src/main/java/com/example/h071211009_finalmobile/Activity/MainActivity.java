@@ -54,5 +54,6 @@ public class MainActivity extends AppCompatActivity {
         fav_ib.setOnClickListener(v -> {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, favoritesFragment).commit();
         });
+
     }
 }
