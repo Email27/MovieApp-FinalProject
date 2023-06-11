@@ -3,6 +3,7 @@ package com.example.h071211009_finalmobile.Fragment;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -76,7 +77,7 @@ public class TvShowsFragment extends Fragment {
     private void setTvShows(List<Tv> tvShows) {
         tvAdapter = new TvShowAdapter(tvShows);
         recyclerView.setAdapter(tvAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
     }
 
     private void initializeViews(View view) {

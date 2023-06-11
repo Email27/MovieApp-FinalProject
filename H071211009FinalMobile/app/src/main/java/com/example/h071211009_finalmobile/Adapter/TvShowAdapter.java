@@ -60,7 +60,7 @@ public class TvShowAdapter extends RecyclerView.Adapter<TvShowAdapter.TvViewHold
 
         public void setData(Tv tvShow, Context context) {
             String title = tvShow.getName();
-            String year = tvShow.getFirstAirDate();
+            String year = tvShow.getFirstAirDate().substring(0, 4);
             String poster = "https://www.themoviedb.org/t/p/w300_and_h450_bestv2/" + tvShow.getPosterUrl();
 
             titleTextView.setText(title);
@@ -68,10 +68,13 @@ public class TvShowAdapter extends RecyclerView.Adapter<TvShowAdapter.TvViewHold
             Glide.with(context)
                     .load(poster)
                     .into(posterImageView);
+
             this.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    Intent intent = new Intent(itemView.getContext(), ContentDetailActivity.class);
+                    intent.putExtra("show", tvShow);
+                    itemView.getContext().startActivity(intent);
                 }
             });
         }

@@ -65,7 +65,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
         public void setData(Movie movie, Context context) {
             String title = movie.getTitle();
-            String year = movie.getReleaseDate();
+            String year = movie.getReleaseDate().substring(0, 4);
             String poster = "https://image.tmdb.org/t/p/w300_and_h450_bestv2/" + movie.getPosterPath();
 
             titleTextView.setText(title);
@@ -73,10 +73,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             Glide.with(context)
                     .load(poster)
                     .into(posterImageView);
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    Intent intent = new Intent(itemView.getContext(), ContentDetailActivity.class);
+                    intent.putExtra("movie", movie);
+                    itemView.getContext().startActivity(intent);
                 }
             });
         }
