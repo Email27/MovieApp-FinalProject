@@ -17,7 +17,7 @@ import com.example.h071211009_finalmobile.R;
 
 public class ContentDetailActivity extends AppCompatActivity {
     private DatabaseHelper dbHelper;
-    private ImageView backdropImageView, backButton, favoriteButton, posterImageView;
+    private ImageView backdropImageView, backButton, favoriteButton, posterImageView, ivType;
     private TextView titleTextView, ratingTextView, synopsisTextView;
 
     @Override
@@ -29,6 +29,7 @@ public class ContentDetailActivity extends AppCompatActivity {
         backButton = findViewById(R.id.btn_back);
         favoriteButton = findViewById(R.id.btn_favorite);
         posterImageView = findViewById(R.id.iv_poster);
+        ivType = findViewById(R.id.iv_type);
         titleTextView = findViewById(R.id.tv_title);
         ratingTextView = findViewById(R.id.tv_rating);
         synopsisTextView = findViewById(R.id.tv_synopsis);
@@ -37,38 +38,44 @@ public class ContentDetailActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent.getParcelableExtra("movie") != null) {
             Movie movie = intent.getParcelableExtra("movie");
-            handleFilmDetails(movie.getTitle(), movie.getVoteAverage().toString(), movie.getOverview(), movie.getPosterPath(), movie.getBackdropUrl(), movie.getId(), movie.getReleaseDate());
+            handleFilmDetails(movie.getTitle(), movie.getVoteAverage().toString(), movie.getOverview(), movie.getPosterPath(), movie.getBackdropUrl(), movie.getId(), movie.getReleaseDate(), "movie");
         } else if (intent.getParcelableExtra("show") != null) {
             Tv show = intent.getParcelableExtra("show");
-            handleFilmDetails(show.getName(), show.getVoteAverage().toString(), show.getOverview(), show.getPosterUrl(), show.getBackdropUrl(), show.getId(), show.getName());
+            handleFilmDetails(show.getName(), show.getVoteAverage().toString(), show.getOverview(), show.getPosterUrl(), show.getBackdropUrl(), show.getId(), show.getName(), "tvshow");
         } else if (intent.getParcelableExtra("favorite") != null) {
             Favorite favorite = intent.getParcelableExtra("favorite");
+            handleFilmDetails(favorite.getTitle(), favorite.getVoteAverage().toString(), favorite.getOverview(), favorite.getPosterPath(), favorite.getBackdropUrl(), favorite.getId(), favorite.getReleaseDate(), "favorite");
         }
 
         backButton.setOnClickListener(view -> onBackPressed());
 
         favoriteButton.setOnClickListener(v -> {
             if (!dbHelper.isMovieInFavorites(titleTextView.getText().toString())) {
-                addMovieToFavorites();
+                favoriteButton.setImageResource(R.drawable.favorite_filled);
+                if (intent.getParcelableExtra("movie") != null) {
+                    Movie movie = intent.getParcelableExtra("movie");
+                    addMovieToFavorites(movie.getId(), movie.getOverview(), movie.getPosterPath().toString(), movie.getReleaseDate(), movie.getTitle(), movie.getVoteAverage(), movie.getBackdropUrl());
+                } else if (intent.getParcelableExtra("show") != null) {
+                    Tv show = intent.getParcelableExtra("show");
+                    addMovieToFavorites(show.getId(), show.getOverview(), show.getPosterUrl().toString(), show.getFirstAirDate(), show.getName(), show.getVoteAverage(), show.getBackdropUrl());
+                } else if (intent.getParcelableExtra("favorite") != null) {
+                    Favorite favorite = intent.getParcelableExtra("favorite");
+                    addMovieToFavorites(favorite.getId(), favorite.getOverview(), favorite.getPosterPath().toString(), favorite.getReleaseDate(), favorite.getTitle(), favorite.getVoteAverage(), favorite.getBackdropUrl());
+                }
             } else {
+                favoriteButton.setImageResource(R.drawable.favorite);
                 deleteMovieFromFavorites();
             }
         });
     }
 
-    private void addMovieToFavorites() {
-        int id = getIntent().getIntExtra("id", 0);
-        String overview = synopsisTextView.getText().toString();
-        String posterUrl = getIntent().getStringExtra("poster_url");
-        String releaseDate = getIntent().getStringExtra("release_date");
-        String title = titleTextView.getText().toString();
-        double voteAverage = Double.parseDouble(ratingTextView.getText().toString());
-        String backdropUrl = getIntent().getStringExtra("backdrop_url");
-
+    private void addMovieToFavorites(int id, String overview, String posterUrl, String releaseDate, String title, double voteAverage, String backdropUrl) {
         Movie movie = new Movie(id, overview, posterUrl, releaseDate, title, voteAverage, backdropUrl);
         long result = dbHelper.insertMovie(movie);
         if (result != -1) {
             Toast.makeText(this, "Movie added to favorites", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Failed to add movie", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -80,7 +87,7 @@ public class ContentDetailActivity extends AppCompatActivity {
         }
     }
 
-    private void handleFilmDetails(String title, String voteAverage, String overview, String posterPath, String backdropPath, int id, String releaseDate) {
+    private void handleFilmDetails(String title, String voteAverage, String overview, String posterPath, String backdropPath, int id, String releaseDate, String type) {
         String posterUrl = "https://image.tmdb.org/t/p/w300_and_h450_bestv2/" + posterPath;
         String backdropUrl = "https://image.tmdb.org/t/p/w300_and_h450_bestv2/" + backdropPath;
 
@@ -89,5 +96,13 @@ public class ContentDetailActivity extends AppCompatActivity {
         Glide.with(this).load(posterUrl).into(posterImageView);
         Glide.with(this).load(backdropUrl).into(backdropImageView);
         synopsisTextView.setText(overview);
+
+        if (type.equals("movie")) {
+            ivType.setImageResource(R.drawable.movie);
+        } else if (type.equals("tvshow")) {
+            ivType.setImageResource(R.drawable.tv);
+        } else {
+            ivType.setImageResource(R.drawable.star);
+        }
     }
 }

@@ -19,10 +19,8 @@ import com.example.h071211009_finalmobile.R;
 import java.util.List;
 
 //Adapter berfungsi sebagai perantara antara data dan antarmuka pengguna untuk menampilkan dan mengelola data dalam komponen seperti ListView atau RecyclerView.
-
 public class TvShowAdapter extends RecyclerView.Adapter<TvShowAdapter.TvViewHolder> {
     private List<Tv> tvShows;
-
     public TvShowAdapter(List<Tv> tvShows) {
         this.tvShows = tvShows;
     }
@@ -65,6 +63,7 @@ public class TvShowAdapter extends RecyclerView.Adapter<TvShowAdapter.TvViewHold
 
             titleTextView.setText(title);
             yearTextView.setText(year);
+
             Glide.with(context)
                     .load(poster)
                     .into(posterImageView);

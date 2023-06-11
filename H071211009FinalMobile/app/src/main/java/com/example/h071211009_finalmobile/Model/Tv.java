@@ -9,24 +9,29 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class Tv implements Parcelable {
+    public static final Creator<Tv> CREATOR = new Creator<Tv>() {
+        @Override
+        public Tv createFromParcel(Parcel in) {
+            return new Tv(in);
+        }
+
+        @Override
+        public Tv[] newArray(int size) {
+            return new Tv[size];
+        }
+    };
     @SerializedName("backdrop_path")
     private final String backdropUrl;
-
     @SerializedName("first_air_date")
     private final String firstAirDate;
-
     @SerializedName("id")
     private final int id;
-
     @SerializedName("name")
     private final String name;
-
     @SerializedName("overview")
     private final String overview;
-
     @SerializedName("poster_path")
     private final String posterUrl;
-
     @SerializedName("vote_average")
     private final Double voteAverage;
 
@@ -50,18 +55,6 @@ public class Tv implements Parcelable {
         posterUrl = in.readString();
         voteAverage = in.readDouble();
     }
-
-    public static final Creator<Tv> CREATOR = new Creator<Tv>() {
-        @Override
-        public Tv createFromParcel(Parcel in) {
-            return new Tv(in);
-        }
-
-        @Override
-        public Tv[] newArray(int size) {
-            return new Tv[size];
-        }
-    };
 
     public String getBackdropUrl() {
         return backdropUrl;

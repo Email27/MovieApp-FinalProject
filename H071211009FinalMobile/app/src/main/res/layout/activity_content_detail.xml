@@ -49,7 +49,7 @@
                 android:layout_height="36dp"
                 android:padding="6dp"
                 android:src="@drawable/favorite"
-                app:tint="#5C469C" />
+                app:tint="#F44336" />
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView

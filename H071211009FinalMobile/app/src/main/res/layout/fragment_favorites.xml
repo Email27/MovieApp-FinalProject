@@ -41,12 +41,13 @@
         tools:listitem="@layout/item_favorite" />
 
     <TextView
-        android:id="@+id/tv_error"
+        android:id="@+id/tv_alert"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
+        android:visibility="gone"
         android:text="You haven't favorited anything yet"
         android:textAlignment="center"
         android:textSize="17sp"

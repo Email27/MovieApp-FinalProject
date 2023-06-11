@@ -22,7 +22,6 @@ import java.util.List;
 //Adapter berfungsi sebagai perantara antara data dan antarmuka pengguna untuk menampilkan dan mengelola data dalam komponen seperti ListView atau RecyclerView.
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
     private List<Movie> movies;
-
     public MovieAdapter(List<Movie> movies) {
         this.movies = movies;
     }
@@ -53,7 +52,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     }
 
     class MovieViewHolder extends RecyclerView.ViewHolder {
-        private ImageView posterImageView;
+        private ImageView posterImageView, ivType;
         private TextView titleTextView, yearTextView;
 
         public MovieViewHolder(@NonNull View itemView) {
@@ -61,6 +60,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             posterImageView = itemView.findViewById(R.id.iv_poster);
             titleTextView = itemView.findViewById(R.id.tv_title);
             yearTextView = itemView.findViewById(R.id.tv_year);
+            ivType = itemView.findViewById(R.id.iv_type);
         }
 
         public void setData(Movie movie, Context context) {
@@ -70,10 +70,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
             titleTextView.setText(title);
             yearTextView.setText(year);
+
             Glide.with(context)
                     .load(poster)
                     .into(posterImageView);
-
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

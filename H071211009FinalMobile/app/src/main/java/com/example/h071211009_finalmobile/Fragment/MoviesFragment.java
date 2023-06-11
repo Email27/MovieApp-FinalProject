@@ -69,7 +69,6 @@ public class MoviesFragment extends Fragment {
                 Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_SHORT).show();
             }
         });
-
         return view;
     }
 
