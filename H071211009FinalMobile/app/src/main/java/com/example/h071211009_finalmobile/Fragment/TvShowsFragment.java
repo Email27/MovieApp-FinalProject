@@ -3,64 +3,103 @@ package com.example.h071211009_finalmobile.Fragment;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.h071211009_finalmobile.API.ApiConfig;
+import com.example.h071211009_finalmobile.API.TvShowAPIService;
+import com.example.h071211009_finalmobile.Adapter.TvShowAdapter;
+import com.example.h071211009_finalmobile.Model.Tv;
+import com.example.h071211009_finalmobile.Model.TvResponse;
 import com.example.h071211009_finalmobile.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link TvShowsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class TvShowsFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private ProgressBar progressBar;
+    private TextView tvAlert;
+    private RecyclerView recyclerView;
+    private TvShowAdapter tvAdapter;
 
     public TvShowsFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment TvShowFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static TvShowsFragment newInstance(String param1, String param2) {
-        TvShowsFragment fragment = new TvShowsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_tv_shows, container, false);
+
+        initializeViews(view);
+        showLoading();
+        Retrofit retrofit = ApiConfig.getRetrofit();
+        TvShowAPIService tvShowService = retrofit.create(TvShowAPIService.class);
+        Call<TvResponse> call = tvShowService.getAiringTodayTV(ApiConfig.API_KEY);
+
+        call.enqueue(new Callback<TvResponse>() {
+            @Override
+            public void onResponse(Call<TvResponse> call, Response<TvResponse> response) {
+                if (response.isSuccessful()) {
+                    hideLoading();
+                    TvResponse tvResponse = response.body();
+                    List<Tv> tvShows = tvResponse.getTvShows();
+                    setTvShows(tvShows);
+                } else {
+                    showAlert();
+                    Toast.makeText(getActivity(), "Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<TvResponse> call, Throwable t) {
+                showAlert();
+                Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        return view;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+    private void setTvShows(List<Tv> tvShows) {
+        tvAdapter = new TvShowAdapter(tvShows);
+        recyclerView.setAdapter(tvAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_tv_shows, container, false);
+    private void initializeViews(View view) {
+        progressBar = view.findViewById(R.id.progress_bar);
+        tvAlert = view.findViewById(R.id.tv_alert);
+        recyclerView = view.findViewById(R.id.rv_tv_shows);
+    }
+
+    private void showLoading() {
+        progressBar.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
+        tvAlert.setVisibility(View.GONE);
+    }
+
+    private void hideLoading() {
+        progressBar.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
+        tvAlert.setVisibility(View.GONE);
+    }
+
+    private void showAlert() {
+        tvAlert.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.GONE);
     }
 }
